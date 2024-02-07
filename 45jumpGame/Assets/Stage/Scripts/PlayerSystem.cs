@@ -22,7 +22,7 @@ public class PlayerSystem : MonoBehaviour
 
     }
 
-    public void GetDamage(int damage)
+    public void GetDamage()
     {
 
     }
