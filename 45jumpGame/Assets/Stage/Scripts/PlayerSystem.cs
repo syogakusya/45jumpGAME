@@ -12,6 +12,7 @@ public class PlayerSystem : MonoBehaviour
     
     private Rigidbody2D rb2D;
     private float initSpeed = 1f;
+    private float angle = 45f;
     public Vector2 pos { get; private set; }
 
     private void Awake()
@@ -53,5 +54,11 @@ public class PlayerSystem : MonoBehaviour
     private void OpenMenu()
     {
 
+    }
+
+    private float RevertAngle()
+    {
+        angle = -angle;
+        return angle;
     }
 }
