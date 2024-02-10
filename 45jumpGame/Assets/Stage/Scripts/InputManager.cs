@@ -4,10 +4,10 @@ using UnityEngine.Events;
 
 public class InputManager : MonoBehaviour
 {
-    public event UnityAction OnClicked, OnOpenedMenu;
+    public event UnityAction OnClicked, OnOpenedMenu, OnUpdate, OnFixedUpdate;
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             OnClicked?.Invoke();
         }
@@ -15,5 +15,12 @@ public class InputManager : MonoBehaviour
         {
             OnOpenedMenu?.Invoke();
         }
+
+        OnUpdate?.Invoke();   
+    }
+
+    private void FixedUpdate()
+    {
+        OnFixedUpdate?.Invoke();
     }
 }

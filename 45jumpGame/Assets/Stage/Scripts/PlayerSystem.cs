@@ -12,18 +12,19 @@ public class PlayerSystem : MonoBehaviour
     
     private Rigidbody2D rb2D;
     private float initSpeed = 1f;
-    private float angle = 45f;
+    private Vector3 dir = new Vector3(1, 1, 0);
+
     public Vector2 pos { get; private set; }
 
     private void Awake()
     {
-        rb2D = gameObject.AddComponent<Rigidbody2D>();
+        rb2D = gameObject.GetComponent<Rigidbody2D>();
         
     }
 
     private void Start()
     {
-        
+        inputManager.OnClicked += StageStart;
     }
 
     private void FixedUpdate()
@@ -33,12 +34,15 @@ public class PlayerSystem : MonoBehaviour
 
     private void StageStart()
     {
-
+        Debug.Log("StageStart");
+        rb2D.AddForce(dir);
+        inputManager.OnClicked -= StageStart;
+        inputManager.OnFixedUpdate += Proceeding;
     }
 
     private void Proceeding()
     {
-
+        rb2D.AddForce(dir);
     }
 
     public void GetDamage()
@@ -56,9 +60,17 @@ public class PlayerSystem : MonoBehaviour
 
     }
 
-    private float RevertAngle()
+    private void RevertAngle()
     {
-        angle = -angle;
-        return angle;
+        dir = new Vector3(-dir.x, dir.y, 0);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("RightSideWall") || collision.gameObject.CompareTag("LeftSideWall"))
+        {
+
+            RevertAngle();
+        }
     }
 }
