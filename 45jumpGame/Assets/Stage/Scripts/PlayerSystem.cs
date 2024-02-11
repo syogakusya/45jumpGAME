@@ -10,39 +10,39 @@ public class PlayerSystem : MonoBehaviour
     [SerializeField] 
     private ParamTable paramTable;
     
-    private Rigidbody2D rb2D;
-    private float initSpeed = 1f;
+    private Rigidbody rb;
+    public float initSpeed = 10f;
     private Vector3 dir = new Vector3(1, 1, 0);
 
     public Vector2 pos { get; private set; }
 
     private void Awake()
     {
-        rb2D = gameObject.GetComponent<Rigidbody2D>();
+        rb = gameObject.GetComponent<Rigidbody>();
         
     }
 
     private void Start()
     {
-        inputManager.OnClicked += StageStart;
+        inputManager.OnClicked += Departure;
     }
 
-    private void FixedUpdate()
+    private void Departure()
     {
-        
+        Debug.Log("Departure");
+        rb.velocity = dir * initSpeed;
+        //rb.AddForce(dir * initSpeed, ForceMode.VelocityChange);
+        inputManager.OnClicked -= Departure;
     }
 
-    private void StageStart()
+    private void Stop()
     {
-        Debug.Log("StageStart");
-        rb2D.AddForce(dir);
-        inputManager.OnClicked -= StageStart;
-        inputManager.OnFixedUpdate += Proceeding;
-    }
-
-    private void Proceeding()
-    {
-        rb2D.AddForce(dir);
+        Debug.Log("Stop");
+        //rb.AddForce(Vector3.zero, ForceMode.VelocityChange);
+        rb.velocity = Vector3.zero;
+        RevertAngle();
+        inputManager.OnUpdate -= Stop;
+        inputManager.OnClicked += Departure;
     }
 
     public void GetDamage()
@@ -65,12 +65,11 @@ public class PlayerSystem : MonoBehaviour
         dir = new Vector3(-dir.x, dir.y, 0);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if(collision.gameObject.CompareTag("RightSideWall") || collision.gameObject.CompareTag("LeftSideWall"))
+        if(other.gameObject.CompareTag("RightSideWall") || other.gameObject.CompareTag("LeftSideWall"))
         {
-
-            RevertAngle();
+            inputManager.OnUpdate += Stop;
         }
     }
 }
