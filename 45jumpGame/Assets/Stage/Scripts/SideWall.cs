@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class SideWall : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private Transform playerPos;
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
-        
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, playerPos.position.y, transform.position.z), Time.deltaTime * 5.0f);
     }
 }
