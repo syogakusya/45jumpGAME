@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,71 +12,64 @@ public class PlayerSystem : MonoBehaviour
     private ParamTable paramTable;
 
     [SerializeField]
-    private Transform playerDirectionTransform;
+    private GameObject playerDirection;
+
+    [SerializeField]
+    private Transform arrowObjectTransform;
     
     private Rigidbody rb;
-    private Vector3 dirVector3 = new Vector3(1, 1, 0);
+    private Vector3 dirVector3 = Vector3.Normalize(new Vector3(1, 1, 0));
     private bool arrowDirectionisRight = true;
     private float arrowAngle;
 
     public float rotationSpeed = 30f;
     public float initSpeed = 10f;
 
-
-    private void Awake()
-    {
-        rb = gameObject.GetComponent<Rigidbody>();
-    }
-
     private void Start()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
         inputManager.OnDown += FirstDeparture;
-    }
-
-    private void Update()
-    {
-        
-        
     }
 
     private void FirstDeparture()
     {
-        Debug.Log("FirstDeparture");
+        //Debug.Log("FirstDeparture");
         rb.velocity = dirVector3 * initSpeed;
         inputManager.OnDown -= FirstDeparture;
     }
 
     private void Departure()
     {
-        Debug.Log("Departure");
+        //Debug.Log("Departure");
+        //Debug.Log("arrowTransForm.positon" + arrowObjectTransform.position);
+        //Debug.Log("transform.postion" + transform.position);
+        dirVector3 = Vector3.Normalize(arrowObjectTransform.position - transform.position);
         rb.velocity = dirVector3 * initSpeed;
         inputManager.OnUp -= Departure;
     }
 
     private void Stop()
     {
-        Debug.Log("Stop");
+        //Debug.Log("Stop");
         rb.velocity = Vector3.zero;
-        RevertAngle();
-        inputManager.OnUpdate -= Stop;
+        RevertDirection();
         inputManager.OnHold += Aim;
     }
 
     private void Aim()
     {
-        Debug.Log("Aim");
-        if(arrowDirectionisRight == true)
+        //Debug.Log("Aim");
+        if (arrowDirectionisRight)
         {
-            playerDirectionTransform.rotation = Quaternion.Euler(0f, 0f, 280f);
-            inputManager.OnHold += RightSideDirectionRotate;
+            playerDirection.transform.rotation = Quaternion.Euler(0f, 0f, 281f);
         }
         else
         {
-            playerDirectionTransform.rotation = Quaternion.Euler(0f, 0f, 80f);
-            inputManager.OnHold += LeftSideDirectionRotate;
+            playerDirection.transform.rotation = Quaternion.Euler(0f, 0f, 79f);
         }
+        inputManager.OnHold += ArrowRotate;
+        inputManager.OnUp += StopArrowRotate;
         inputManager.OnHold -= Aim;
-        inputManager.OnUp += StopDirectionRotate;
         inputManager.OnUp += Departure;
     }
 
@@ -95,47 +89,61 @@ public class PlayerSystem : MonoBehaviour
 
     }
 
-    private void RevertAngle()
+    private void RevertDirection()
     {
+        //Debug.Log("RevertDirection");
         dirVector3 = new Vector3(-dirVector3.x, dirVector3.y, 0);
         arrowDirectionisRight = !arrowDirectionisRight;
     }
 
-    private void RightSideDirectionRotate()
+    private void RightSideArrowRotateRevert()
     {
-        arrowAngle = rotationSpeed * Time.deltaTime;
-        //Debug.Log(playerDirection.transform.rotation.eulerAngles.z);
-        playerDirectionTransform.Rotate(0f, 0f, arrowAngle);
-        if (playerDirectionTransform.rotation.eulerAngles.z > 350 || playerDirectionTransform.rotation.eulerAngles.z < 280)
+        if (!(playerDirection.transform.rotation.eulerAngles.z <= 350 && playerDirection.transform.rotation.eulerAngles.z >= 280))
         {
-            rotationSpeed = -rotationSpeed;
             //Debug.Log("RightSideRevertRotation");
+            rotationSpeed = -rotationSpeed;
         }
     }
 
-    private void LeftSideDirectionRotate()
+    private void LeftSideArrowRotateRevert()
     {
+        if (!(playerDirection.transform.rotation.eulerAngles.z <= 80 && playerDirection.transform.rotation.eulerAngles.z >= 10))
+        {
+            //Debug.Log("LeftSideRevertRotation");
+            rotationSpeed = -rotationSpeed;
+        }
+    }
+
+
+    //ClampA‚ ‚é‚¢‚ÍMathf.Repeat‚ðŽg‚Á‚½‰ñ“]Šp“x‚Ì§ŒÀ‚à‚ ‚é‚±‚Æ‚ðl—¶
+    private void ArrowRotate()
+    {
+        if (arrowDirectionisRight)
+        {
+            RightSideArrowRotateRevert();
+        }
+        else
+        {
+            LeftSideArrowRotateRevert();
+        }
         arrowAngle = rotationSpeed * Time.deltaTime;
         //Debug.Log(playerDirection.transform.rotation.eulerAngles.z);
-        playerDirectionTransform.Rotate(0f, 0f, arrowAngle);
-        if (playerDirectionTransform.rotation.eulerAngles.z > 80 || playerDirectionTransform.rotation.eulerAngles.z < 10)
-        {
-            rotationSpeed = -rotationSpeed;
-            //Debug.Log("LeftSideRevertRotation");
-        }
+        playerDirection.transform.Rotate(0f, 0f, arrowAngle);
     }
 
-    private void StopDirectionRotate()
+    private void StopArrowRotate()
     {
-        inputManager.OnHold -= RightSideDirectionRotate;
-        inputManager.OnHold -= LeftSideDirectionRotate;
+        inputManager.OnHold -= ArrowRotate;
+        inputManager.OnUp -= StopArrowRotate;
     }
+
+
 
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("RightSideWall") || other.gameObject.CompareTag("LeftSideWall"))
         {
-            inputManager.OnUpdate += Stop;
+            Stop();
         }
     }
 }

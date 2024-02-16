@@ -5,7 +5,7 @@ using UnityEngine.Events;
 public class InputManager : MonoBehaviour
 {
     private bool isHolded = false;
-    public event UnityAction OnHold, OnUp, OnDown, OnOpenedMenu, OnUpdate, OnFixedUpdate;
+    public event UnityAction OnHold, OnUp, OnDown, OnOpenedMenu;
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
@@ -31,15 +31,8 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("OnEscapeDown");
+            //Debug.Log("OnEscapeDown");
             OnOpenedMenu?.Invoke();
-        }
-
-        OnUpdate?.Invoke();   
-    }
-
-    private void FixedUpdate()
-    {
-        OnFixedUpdate?.Invoke();
+        }  
     }
 }
