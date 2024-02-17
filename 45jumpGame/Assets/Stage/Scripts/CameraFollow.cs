@@ -22,6 +22,6 @@ public class CameraFollow : MonoBehaviour
     {
 
         if(defaultPosition.y < playerTransform.position.y)
-            transform.position = Vector3.Lerp(transform.position,new Vector3(transform.position.x, playerTransform.position.y, transform.position.z),Time.deltaTime * cameraLerpRange);
+            transform.position = Vector3.Slerp(transform.position,new Vector3(transform.position.x, playerTransform.position.y, transform.position.z),Time.deltaTime * cameraLerpRange);
     }
 }

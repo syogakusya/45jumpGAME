@@ -98,7 +98,7 @@ public class PlayerSystem : MonoBehaviour
 
     private void RightSideArrowRotateRevert()
     {
-        if (!(playerDirection.transform.rotation.eulerAngles.z <= 350 && playerDirection.transform.rotation.eulerAngles.z >= 280))
+        if (!(playerDirection.transform.rotation.eulerAngles.z <= 350f && playerDirection.transform.rotation.eulerAngles.z >= 280f))
         {
             //Debug.Log("RightSideRevertRotation");
             rotationSpeed = -rotationSpeed;
@@ -107,7 +107,7 @@ public class PlayerSystem : MonoBehaviour
 
     private void LeftSideArrowRotateRevert()
     {
-        if (!(playerDirection.transform.rotation.eulerAngles.z <= 80 && playerDirection.transform.rotation.eulerAngles.z >= 10))
+        if (!(playerDirection.transform.rotation.eulerAngles.z <= 80f && playerDirection.transform.rotation.eulerAngles.z >= 10f))
         {
             //Debug.Log("LeftSideRevertRotation");
             rotationSpeed = -rotationSpeed;
@@ -118,16 +118,18 @@ public class PlayerSystem : MonoBehaviour
     //Clamp、あるいはMathf.Repeatを使った回転角度の制限もあることを考慮
     private void ArrowRotate()
     {
+        Debug.Log(playerDirection.transform.rotation.eulerAngles.z);
         if (arrowDirectionisRight)
         {
             RightSideArrowRotateRevert();
+            playerDirection.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Clamp(playerDirection.transform.rotation.eulerAngles.z, 280f, 350f));
         }
         else
         {
             LeftSideArrowRotateRevert();
+            playerDirection.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Clamp(playerDirection.transform.rotation.eulerAngles.z % 360f, 10f, 80f));
         }
         arrowAngle = rotationSpeed * Time.deltaTime;
-        //Debug.Log(playerDirection.transform.rotation.eulerAngles.z);
         playerDirection.transform.Rotate(0f, 0f, arrowAngle);
     }
 
